@@ -1,0 +1,161 @@
+<div class="help-container">
+  <div class="page-header">
+    <h1>❓ Help & Support</h1>
+    <p>Find answers and get the help you need</p>
+  </div>
+
+  <!-- Quick Links -->
+  <div class="quick-links">
+    <div class="quick-link-card" *ngFor="let link of quickLinks">
+      <span class="link-icon">{{ link.icon }}</span>
+      <div class="link-content">
+        <h3>{{ link.title }}</h3>
+        <p>{{ link.description }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="help-content">
+    <div class="tabs">
+      <button 
+        class="tab-btn" 
+        [class.active]="activeSection === 'faq'"
+        (click)="setSection('faq')">
+        💬 FAQ
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="activeSection === 'tutorials'"
+        (click)="setSection('tutorials')">
+        🎓 Tutorials
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="activeSection === 'shortcuts'"
+        (click)="setSection('shortcuts')">
+        ⌨️ Shortcuts
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="activeSection === 'contact'"
+        (click)="setSection('contact')">
+        📧 Contact
+      </button>
+    </div>
+
+    <!-- FAQ Section -->
+    <div class="tab-content" *ngIf="activeSection === 'faq'">
+      <div class="search-box">
+        <input 
+          type="text" 
+          [(ngModel)]="searchQuery" 
+          placeholder="🔍 Search questions..."
+          class="search-input">
+      </div>
+
+      <div class="faq-list">
+        <div class="faq-item fade-in-up" *ngFor="let faq of filteredFAQs; let i = index"
+             [class.stagger-1]="i % 5 === 0"
+             [class.stagger-2]="i % 5 === 1"
+             [class.stagger-3]="i % 5 === 2"
+             [class.stagger-4]="i % 5 === 3"
+             [class.stagger-5]="i % 5 === 4">
+          <div class="faq-question" (click)="toggleFAQ(faq)">
+            <span>{{ faq.question }}</span>
+            <span class="faq-icon">{{ faq.expanded ? '−' : '+' }}</span>
+          </div>
+          <div class="faq-answer" [class.expanded]="faq.expanded">
+            <p>{{ faq.answer }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="no-results" *ngIf="filteredFAQs.length === 0">
+        <p>No results found for "{{ searchQuery }}"</p>
+        <button class="btn-primary" (click)="searchQuery = ''">Clear Search</button>
+      </div>
+    </div>
+
+    <!-- Tutorials Section -->
+    <div class="tab-content" *ngIf="activeSection === 'tutorials'">
+      <h2>Video Tutorials</h2>
+      <div class="tutorials-grid">
+        <div class="tutorial-card" *ngFor="let video of videoTutorials">
+          <div class="tutorial-icon">{{ video.icon }}</div>
+          <h3>{{ video.title }}</h3>
+          <p>{{ video.description }}</p>
+          <div class="tutorial-footer">
+            <span class="duration">⏱️ {{ video.duration }}</span>
+            <button class="btn-watch">▶️ Watch</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shortcuts Section -->
+    <div class="tab-content" *ngIf="activeSection === 'shortcuts'">
+      <h2>Keyboard Shortcuts</h2>
+      <p class="section-description">Speed up your workflow with these keyboard shortcuts</p>
+      <div class="shortcuts-list">
+        <div class="shortcut-item" *ngFor="let shortcut of shortcuts">
+          <div class="shortcut-keys">
+            <kbd>{{ shortcut.keys }}</kbd>
+          </div>
+          <div class="shortcut-action">{{ shortcut.action }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Section -->
+    <div class="tab-content" *ngIf="activeSection === 'contact'">
+      <h2>Contact Support</h2>
+      <p class="section-description">Need more help? Reach out to our support team</p>
+      
+      <div class="contact-options">
+        <div class="contact-card">
+          <div class="contact-icon">📧</div>
+          <h3>Email Support</h3>
+          <p>Get a response within 24 hours</p>
+          <button class="btn-primary" (click)="openSupportEmail()">Send Email</button>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-icon">📖</div>
+          <h3>Documentation</h3>
+          <p>Browse our complete user guide</p>
+          <button class="btn-primary" (click)="openDocumentation()">View Docs</button>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-icon">💬</div>
+          <h3>Community Forum</h3>
+          <p>Ask questions and share tips</p>
+          <button class="btn-primary">Visit Forum</button>
+        </div>
+      </div>
+
+      <div class="contact-info">
+        <h3>Support Information</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <strong>Email:</strong>
+            <span>support&#64;microcommerce.com</span>
+          </div>
+          <div class="info-item">
+            <strong>Phone:</strong>
+            <span>(555) 123-4567</span>
+          </div>
+          <div class="info-item">
+            <strong>Hours:</strong>
+            <span>Mon-Fri, 9AM-6PM</span>
+          </div>
+          <div class="info-item">
+            <strong>Response Time:</strong>
+            <span>Within 24 hours</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

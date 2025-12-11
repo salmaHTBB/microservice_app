@@ -1,0 +1,109 @@
+<div class="form-container">
+  <div class="modal-header">
+    <h2 class="modal-title">Create New Bill</h2>
+    <button class="modal-close" (click)="onCancel()" type="button">×</button>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <circle cx="12" cy="12" r="10" stroke-width="2"/>
+      <line x1="12" y1="8" x2="12" y2="12" stroke-width="2" stroke-linecap="round"/>
+      <line x1="12" y1="16" x2="12.01" y2="16" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    {{ errorMessage }}
+  </div>
+
+  <form [formGroup]="billForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label class="form-label">Customer *</label>
+      <select class="form-control" formControlName="customerId">
+        <option value="">Select a customer</option>
+        <option *ngFor="let customer of customers" [value]="customer.id">
+          {{ customer.name }} ({{ customer.email }})
+        </option>
+      </select>
+      <div *ngIf="billForm.get('customerId')?.invalid && billForm.get('customerId')?.touched" class="form-error">
+        Customer selection is required
+      </div>
+    </div>
+
+    <div class="section-header">
+      <h3 class="section-title">Products</h3>
+      <button type="button" class="btn btn-sm btn-secondary" (click)="addProductItem()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <line x1="12" y1="5" x2="12" y2="19" stroke-width="2" stroke-linecap="round"/>
+          <line x1="5" y1="12" x2="19" y2="12" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Add Product
+      </button>
+    </div>
+
+    <div formArrayName="productItems" class="product-items">
+      <div *ngFor="let item of productItems.controls; let i = index" [formGroupName]="i" class="product-item-card">
+        <div class="product-item-header">
+          <span class="item-number">#{{ i + 1 }}</span>
+          <button 
+            type="button" 
+            class="btn-remove" 
+            (click)="removeProductItem(i)"
+            [disabled]="productItems.length === 1"
+            title="Remove product">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <line x1="18" y1="6" x2="6" y2="18" stroke-width="2" stroke-linecap="round"/>
+              <line x1="6" y1="6" x2="18" y2="18" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="product-item-body">
+          <div class="form-group">
+            <label class="form-label">Product *</label>
+            <select class="form-control" formControlName="productId" (change)="onProductChange(i)">
+              <option value="">Select a product</option>
+              <option *ngFor="let product of products" [value]="product.id">
+                {{ product.name }} - {{ product.price }} DH
+              </option>
+            </select>
+          </div>
+
+          <div class="form-row-inline">
+            <div class="form-group">
+              <label class="form-label">Quantity *</label>
+              <input type="number" class="form-control" formControlName="quantity" min="1">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Unit Price *</label>
+              <div class="input-with-icon">
+                <span class="input-icon">DH</span>
+                <input type="number" class="form-control with-icon" formControlName="unitPrice" min="0" step="0.01">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Total</label>
+              <div class="total-display">
+                {{ calculateItemTotal(i).toFixed(2) }} DH
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grand-total">
+      <span class="grand-total-label">Grand Total:</span>
+      <span class="grand-total-value">{{ calculateGrandTotal().toFixed(2) }} DH</span>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-outline" (click)="onCancel()" [disabled]="loading">
+        Cancel
+      </button>
+      <button type="submit" class="btn btn-primary" [disabled]="billForm.invalid || loading">
+        <span *ngIf="!loading">Create Bill</span>
+        <span *ngIf="loading">Creating...</span>
+      </button>
+    </div>
+  </form>
+</div>

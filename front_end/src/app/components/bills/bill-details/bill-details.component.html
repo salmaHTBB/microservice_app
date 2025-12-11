@@ -1,0 +1,132 @@
+<div class="page-container fade-in">
+  <div class="page-header no-print">
+    <button class="btn btn-outline" (click)="goBack()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <line x1="19" y1="12" x2="5" y2="12" stroke-width="2" stroke-linecap="round"/>
+        <polyline points="12 19 5 12 12 5" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Back to Bills
+    </button>
+    <button class="btn btn-primary" (click)="printBill()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <polyline points="6 9 6 2 18 2 18 9" stroke-width="2" stroke-linecap="round"/>
+        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" stroke-width="2" stroke-linecap="round"/>
+        <rect x="6" y="14" width="12" height="8" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Print Bill
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger no-print">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <circle cx="12" cy="12" r="10" stroke-width="2"/>
+      <line x1="15" y1="9" x2="9" y2="15" stroke-width="2" stroke-linecap="round"/>
+      <line x1="9" y1="9" x2="15" y2="15" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="!loading && bill" class="invoice-container">
+    <!-- Invoice Header -->
+    <div class="invoice-header">
+      <div class="company-info">
+        <h1 class="company-name">MicroCommerce Suite</h1>
+        <p class="company-address">
+          123 Business Street<br>
+          Commerce City, CC 12345<br>
+          contact&#64;microcommerce.com
+        </p>
+      </div>
+      <div class="invoice-info">
+        <h2 class="invoice-title">INVOICE</h2>
+        <div class="invoice-meta">
+          <div class="meta-row">
+            <span class="meta-label">Invoice #:</span>
+            <span class="meta-value">{{ bill.id }}</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Date:</span>
+            <span class="meta-value">{{ formatDate(bill.billingDate) }}</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Status:</span>
+            <span class="badge badge-success">Paid</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer Info -->
+    <div class="bill-to-section">
+      <h3 class="section-title">Bill To</h3>
+      <div class="customer-details">
+        <p><strong>Customer ID:</strong> #{{ bill.customerId }}</p>
+        <p *ngIf="bill.customer"><strong>Name:</strong> {{ bill.customer.name }}</p>
+        <p *ngIf="bill.customer"><strong>Email:</strong> {{ bill.customer.email }}</p>
+      </div>
+    </div>
+
+    <!-- Products Table -->
+    <div class="products-section">
+      <table class="invoice-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Product</th>
+            <th class="text-center">Quantity</th>
+            <th class="text-right">Unit Price</th>
+            <th class="text-right">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of bill.productItems; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>
+              <div class="product-info">
+                <span class="product-name">{{ item.product?.name || 'Product #' + item.productId }}</span>
+                <span class="product-id">ID: {{ item.productId }}</span>
+              </div>
+            </td>
+            <td class="text-center">{{ item.quantity }}</td>
+            <td class="text-right">{{ item.unitPrice.toFixed(2) }} DH</td>
+            <td class="text-right"><strong>{{ calculateItemTotal(item).toFixed(2) }} DH</strong></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Totals Section -->
+    <div class="totals-section">
+      <div class="totals-grid">
+        <div class="total-row">
+          <span class="total-label">Subtotal:</span>
+          <span class="total-value">{{ calculateSubtotal().toFixed(2) }} DH</span>
+        </div>
+        <div class="total-row">
+          <span class="total-label">Tax (10%):</span>
+          <span class="total-value">{{ calculateTax().toFixed(2) }} DH</span>
+        </div>
+        <div class="total-row grand-total-row">
+          <span class="total-label">Total Amount:</span>
+          <span class="total-value">{{ calculateTotal().toFixed(2) }} DH</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="invoice-footer">
+      <div class="footer-note">
+        <h4>Payment Terms</h4>
+        <p>Payment is due within 30 days. Thank you for your business!</p>
+      </div>
+      <div class="footer-signature">
+        <div class="signature-line"></div>
+        <p>Authorized Signature</p>
+      </div>
+    </div>
+  </div>
+</div>
