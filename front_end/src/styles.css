@@ -932,37 +932,75 @@ select.form-control {
 }
 
 /* Alerts */
+
+/* Ultra-compact alert: icon + message, single line, px = height */
+/* Ultra-compact alert: icon + message, single line, px = height, even tighter */
 .alert {
-  padding: 1rem 1.25rem;
-  margin-bottom: var(--spacing-4);
-  border: 1px solid transparent;
-  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
-  gap: var(--spacing-3);
+  gap: 0.12rem;
+  padding: 0 3px;
+  height: 18px;
+  min-height: 0;
+  margin-bottom: 0.02rem;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  font-size: 9px;
+  width: 100%;
+  max-width: 100%;
+  line-height: 1;
+  box-shadow: none;
+  background-clip: padding-box;
+  overflow: hidden;
 }
 
+/* Ensure alert children do not increase height */
+.alert > * {
+  margin: 0;
+  padding: 0;
+  line-height: 1;
+  font-size: inherit;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+/* Alert icon (svg or img) sizing for perfect alignment */
+.alert svg, .alert img {
+  width: 13px;
+  height: 13px;
+  min-width: 13px;
+  min-height: 13px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+
 .alert-success {
-  background: rgba(16, 185, 129, 0.1);
-  border-color: rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.18);
   color: var(--success-light);
 }
 
+
 .alert-danger {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.18);
   color: var(--danger-light);
 }
 
+
 .alert-warning {
-  background: rgba(245, 158, 11, 0.1);
-  border-color: rgba(245, 158, 11, 0.3);
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.18);
   color: var(--warning-light);
 }
 
+
 .alert-info {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(59, 130, 246, 0.08);
+  border-color: rgba(59, 130, 246, 0.18);
   color: var(--info-light);
 }
 
