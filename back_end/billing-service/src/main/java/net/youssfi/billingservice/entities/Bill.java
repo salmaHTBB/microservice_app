@@ -14,7 +14,7 @@ public class Bill {
     private Long id;
     private Date billingDate;
     private long customerId;
-    @OneToMany(mappedBy = "bill")
+    @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductItem> productItems = new ArrayList<>();
     @Transient private Customer customer;
 }

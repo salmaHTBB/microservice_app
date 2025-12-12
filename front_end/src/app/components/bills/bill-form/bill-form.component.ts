@@ -67,9 +67,11 @@ export class BillFormComponent implements OnInit {
 
   onProductChange(index: number): void {
     const productId = this.productItems.at(index).get('productId')?.value;
-    const product = this.products.find(p => p.id === productId);
-    if (product) {
+    const product = this.products.find(p => p.id == productId);
+    console.log('Product selected:', productId, 'Found:', product);
+    if (product && product.price) {
       this.productItems.at(index).patchValue({ unitPrice: product.price });
+      console.log('Updated unit price to:', product.price);
     }
   }
 
@@ -86,6 +88,7 @@ export class BillFormComponent implements OnInit {
     this.productService.getAllProducts().subscribe({
       next: (response) => {
         this.products = response || [];
+        console.log('Products loaded:', this.products);
       },
       error: (error) => console.error('Error loading products:', error)
     });
@@ -106,14 +109,23 @@ export class BillFormComponent implements OnInit {
   onSubmit(): void {
     if (this.billForm.valid) {
       this.loading = true;
+      
+      // Format the bill data properly
       const billData: Bill = {
-        customerId: this.billForm.value.customerId,
-        billingDate: new Date(),
-        productItems: this.billForm.value.productItems
+        customerId: Number(this.billForm.value.customerId),
+        billingDate: new Date().toISOString(),
+        productItems: this.billForm.value.productItems.map((item: any) => ({
+          productId: String(item.productId),
+          quantity: Number(item.quantity),
+          unitPrice: Number(item.unitPrice)
+        }))
       };
 
+      console.log('Creating bill with data:', billData);
+
       this.billService.createBill(billData).subscribe({
-        next: () => {
+        next: (response) => {
+          console.log('Bill created successfully:', response);
           this.loading = false;
           this.saved.emit();
         },

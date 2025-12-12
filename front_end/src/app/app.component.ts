@@ -64,5 +64,5 @@ import { Component } from '@angular/core';
   `]
 })
 export class AppComponent {
-  title = 'MicroCommerce Suite';
+  title = 'Microservices Management Platform';
 }

@@ -11,8 +11,8 @@ export interface ProductItem {
 
 export interface Bill {
   id?: number;
-  billingDate: Date;
-  customerId: number;
+  billingDate: Date | string;
+  customerId: number | string;
   productItems: ProductItem[];
   customer?: Customer;
   total?: number;

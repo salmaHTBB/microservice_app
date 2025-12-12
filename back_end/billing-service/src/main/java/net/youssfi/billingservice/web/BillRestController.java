@@ -1,4 +1,7 @@
+
 package net.youssfi.billingservice.web;
+
+import net.youssfi.billingservice.entities.ProductItem;
 
 import net.youssfi.billingservice.entities.Bill;
 import net.youssfi.billingservice.feign.CustomerRestClient;
@@ -57,7 +60,18 @@ public class BillRestController {
     @PostMapping
     public ResponseEntity<Bill> createBill(@RequestBody Bill bill) {
         bill.setId(null); // Ensure new ID is generated
+
+        // Fix: Set the bill reference on each product item and re-assign the list
+        if (bill.getProductItems() != null) {
+            for (int i = 0; i < bill.getProductItems().size(); i++) {
+                ProductItem item = bill.getProductItems().get(i);
+                item.setBill(bill);
+            }
+            bill.setProductItems(bill.getProductItems()); // Re-assign to trigger JPA
+        }
+
         Bill savedBill = billRepository.save(bill);
+        loadBillDetails(savedBill);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedBill);
     }
 

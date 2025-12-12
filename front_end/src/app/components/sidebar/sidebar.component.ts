@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { CustomerService } from '../../services/customer.service';
+import { ProductService } from '../../services/product.service';
 
 interface MenuItem {
   label: string;
@@ -53,22 +55,6 @@ interface MenuItem {
         </div>
       </div>
       
-      <!-- Pro Upgrade Card -->
-      <div class="sidebar-card fade-in-up">
-        <div class="card-icon float">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <h4 class="card-title">Upgrade to Pro</h4>
-        <p class="card-text">Unlock advanced features and analytics</p>
-        <button class="card-btn btn btn-primary btn-sm">
-          <span>Upgrade Now</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="m9 18 6-6-6-6"/>
-          </svg>
-        </button>
-      </div>
     </aside>
   `,
   styles: [`
@@ -304,11 +290,6 @@ interface MenuItem {
       gap: 0.5rem;
     }
 
-    .card-btn svg {
-      width: 1rem;
-      height: 1rem;
-    }
-
     @media (max-width: 1024px) {
       .sidebar {
         width: 240px;
@@ -326,9 +307,10 @@ interface MenuItem {
     }
   `]
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
   customerCount: number = 0;
   productCount: number = 0;
+  loading: boolean = true;
 
   menuItems: MenuItem[] = [
     {
@@ -348,10 +330,38 @@ export class SidebarComponent {
     }
   ];
 
-  constructor(private router: Router) {
-    // Set some demo counts - in real app, fetch from service
-    this.customerCount = 124;
-    this.productCount = 86;
+  constructor(
+    private router: Router,
+    private customerService: CustomerService,
+    private productService: ProductService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadCounts();
+  }
+
+  loadCounts(): void {
+    // Load customer count
+    this.customerService.getAllCustomers().subscribe({
+      next: (customers) => {
+        this.customerCount = customers?.length || 0;
+      },
+      error: (error) => {
+        console.error('Error loading customer count:', error);
+        this.customerCount = 0;
+      }
+    });
+
+    // Load product count
+    this.productService.getAllProducts().subscribe({
+      next: (products) => {
+        this.productCount = products?.length || 0;
+      },
+      error: (error) => {
+        console.error('Error loading product count:', error);
+        this.productCount = 0;
+      }
+    });
   }
 
   navigate(route: string): void {

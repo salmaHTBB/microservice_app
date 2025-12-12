@@ -2,8 +2,23 @@
   <div class="page-header">
     <div>
       <h1 class="page-title">Bills</h1>
-      <p class="page-subtitle">View customer invoices and billing (Read-Only)</p>
+      <p class="page-subtitle">Manage customer invoices and billing</p>
     </div>
+    <button class="btn btn-primary" (click)="showCreateForm = true" *ngIf="!showCreateForm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="20" height="20">
+        <line x1="12" y1="5" x2="12" y2="19" stroke-width="2" stroke-linecap="round"/>
+        <line x1="5" y1="12" x2="19" y2="12" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Create New Bill
+    </button>
+  </div>
+
+  <!-- Bill Creation Form -->
+  <div *ngIf="showCreateForm" class="card mb-4">
+    <app-bill-form 
+      (saved)="onBillCreated()" 
+      (cancelled)="showCreateForm = false">
+    </app-bill-form>
   </div>
 
   <div *ngIf="errorMessage" class="alert alert-danger">

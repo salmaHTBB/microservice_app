@@ -61,7 +61,7 @@
             <select class="form-control" formControlName="productId" (change)="onProductChange(i)">
               <option value="">Select a product</option>
               <option *ngFor="let product of products" [value]="product.id">
-                {{ product.name }} - {{ product.price }} DH
+                {{ product.name }} - {{ product.price || 0 }} DH (Stock: {{ product.quantity }})
               </option>
             </select>
           </div>
@@ -93,7 +93,7 @@
 
     <div class="grand-total">
       <span class="grand-total-label">Grand Total:</span>
-      <span class="grand-total-value">{{ calculateGrandTotal().toFixed(2) }} DH</span>
+      <span class="grand-total-value">{{ (calculateGrandTotal() || 0).toFixed(2) }} DH</span>
     </div>
 
     <div class="form-actions">

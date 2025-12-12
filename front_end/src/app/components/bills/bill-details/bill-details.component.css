@@ -11,8 +11,8 @@
 }
 
 .invoice-container {
-  background: white;
-  color: #1a1a1a;
+  background: #181c24;
+  color: #f8fafc;
   padding: 48px;
   border-radius: 12px;
   box-shadow: var(--shadow-lg);
@@ -43,7 +43,7 @@
 .invoice-title {
   font-size: 36px;
   font-weight: 800;
-  color: #1a1a1a;
+  color: #f8fafc;
   margin-bottom: 16px;
   text-align: right;
 }
@@ -67,7 +67,7 @@
 }
 
 .meta-value {
-  color: #1a1a1a;
+  color: #f8fafc;
   font-weight: 700;
   text-align: right;
 }
@@ -101,42 +101,72 @@
   margin-bottom: 32px;
 }
 
+
 .invoice-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  background: #181c24;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(79,70,229,0.07);
   overflow: hidden;
+  margin-bottom: 0;
 }
 
 .invoice-table thead {
-  background: #f8f9fa;
+  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
 }
 
 .invoice-table th {
-  padding: 16px;
+  padding: 18px 20px;
   text-align: left;
-  font-weight: 700;
-  color: #1a1a1a;
+  font-weight: 800;
+  color: #fff;
   border-bottom: 2px solid #e0e0e0;
   text-transform: uppercase;
-  font-size: 12px;
-  letter-spacing: 0.5px;
+  font-size: 13px;
+  letter-spacing: 1px;
 }
 
 .invoice-table td {
-  padding: 16px;
-  border-bottom: 1px solid #f0f0f0;
-  color: #333;
+  padding: 18px 20px;
+  border-bottom: 1.5px solid #f0f0f0;
+  color: #f8fafc;
+  font-size: 15px;
+  vertical-align: middle;
 }
 
 .invoice-table tbody tr:last-child td {
   border-bottom: none;
 }
 
+.invoice-table tbody tr:nth-child(even) {
+  background: #f7f8fa;
+}
+
+.invoice-table tbody tr:nth-child(odd) {
+  background: #181c24;
+}
+
 .invoice-table tbody tr:hover {
-  background: #fafafa;
+  background: #23263a;
+  transition: background 0.2s;
+}
+
+.invoice-table th:first-child,
+.invoice-table td:first-child {
+  border-top-left-radius: 16px;
+}
+.invoice-table th:last-child,
+.invoice-table td:last-child {
+  border-top-right-radius: 16px;
+}
+
+.text-center {
+  text-align: center;
+}
+.text-right {
+  text-align: right;
 }
 
 .product-info {
@@ -147,7 +177,7 @@
 
 .product-name {
   font-weight: 600;
-  color: #1a1a1a;
+  color: #f8fafc;
 }
 
 .product-id {
@@ -197,7 +227,7 @@
 
 .total-value {
   font-weight: 700;
-  color: #1a1a1a;
+  color: #f8fafc;
 }
 
 .invoice-footer {
@@ -254,7 +284,7 @@
   }
 
   body {
-    background: white;
+    background: #181c24;
   }
 }
 

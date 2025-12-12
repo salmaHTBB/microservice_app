@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError, retry, timeout } from 'rxjs/operators';
 import { Bill } from '../models/bill.model';
 import { environment } from '../../environments/environment';
 
@@ -9,42 +9,56 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class BillService {
-  private apiUrl = `${environment.gatewayUrl}/billing-service`;
-  private billsApiUrl = `${this.apiUrl}/bills`;
+  private readonly apiUrl = `${environment.gatewayUrl}/billing-service/bills`;
+  private readonly REQUEST_TIMEOUT = 30000; // 30 seconds
+  private readonly RETRY_ATTEMPTS = 2;
 
   constructor(private http: HttpClient) { }
 
-  getAllBills(): Observable<any> {
-    // Use custom REST endpoint that returns bills with full details
-    return this.http.get<any>(this.billsApiUrl).pipe(
-      map(response => {
-        // Handle both Spring Data REST format and custom endpoint format
-        if (response._embedded && response._embedded.bills) {
-          return response._embedded.bills;
-        } else if (Array.isArray(response)) {
-          return response;
-        }
-        return [];
-      })
+  private handleError(error: HttpErrorResponse): Observable<never> {
+    let errorMessage = 'An error occurred';
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = `Error: ${error.error.message}`;
+    } else {
+      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+    }
+    console.error(errorMessage);
+    return throwError(() => error);
+  }
+
+  getAllBills(): Observable<Bill[]> {
+    return this.http.get<Bill[]>(this.apiUrl).pipe(
+      timeout(this.REQUEST_TIMEOUT),
+      retry(this.RETRY_ATTEMPTS),
+      catchError(this.handleError)
     );
   }
 
   getBill(id: number): Observable<Bill> {
-    // This uses the custom BillRestController endpoint with full customer and product details
-    return this.http.get<Bill>(`${this.billsApiUrl}/${id}`);
+    return this.http.get<Bill>(`${this.apiUrl}/${id}`).pipe(
+      timeout(this.REQUEST_TIMEOUT),
+      catchError(this.handleError)
+    );
   }
 
-  getBillsByCustomer(customerId: number): Observable<any> {
-    return this.http.get<any>(`${this.billsApiUrl}/search/findByCustomerId?customerId=${customerId}`).pipe(
-      map(response => response._embedded ? response._embedded.bills : [])
+  getBillsByCustomer(customerId: number): Observable<Bill[]> {
+    return this.http.get<Bill[]>(`${this.apiUrl}?customerId=${customerId}`).pipe(
+      timeout(this.REQUEST_TIMEOUT),
+      catchError(this.handleError)
     );
   }
 
   createBill(bill: Bill): Observable<Bill> {
-    return this.http.post<Bill>(this.billsApiUrl, bill);
+    return this.http.post<Bill>(this.apiUrl, bill).pipe(
+      timeout(this.REQUEST_TIMEOUT),
+      catchError(this.handleError)
+    );
   }
 
   deleteBill(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.billsApiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+      timeout(this.REQUEST_TIMEOUT),
+      catchError(this.handleError)
+    );
   }
 }

@@ -12,6 +12,7 @@ export class BillsComponent implements OnInit {
   bills: Bill[] = [];
   loading = false;
   errorMessage = '';
+  showCreateForm = false;
 
   constructor(
     private billService: BillService,
@@ -24,14 +25,17 @@ export class BillsComponent implements OnInit {
 
   loadBills(): void {
     this.loading = true;
+    this.errorMessage = '';
     this.billService.getAllBills().subscribe({
-      next: (response) => {
-        this.bills = response._embedded?.bills || [];
+      next: (bills) => {
+        this.bills = Array.isArray(bills) ? bills : [];
         this.loading = false;
+        console.log('Bills loaded:', this.bills.length);
       },
       error: (error) => {
         console.error('Error loading bills:', error);
-        this.errorMessage = 'Failed to load bills';
+        this.errorMessage = 'Failed to load bills. Please check if the billing service is running.';
+        this.bills = [];
         this.loading = false;
       }
     });
@@ -52,5 +56,10 @@ export class BillsComponent implements OnInit {
       month: 'short',
       day: 'numeric'
     });
+  }
+
+  onBillCreated(): void {
+    this.showCreateForm = false;
+    this.loadBills();
   }
 }

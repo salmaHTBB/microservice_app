@@ -28,6 +28,8 @@ export class BillDetailsComponent implements OnInit {
     this.loading = true;
     this.billService.getBill(id).subscribe({
       next: (bill) => {
+        console.log('Bill loaded:', bill);
+        console.log('Product items:', bill.productItems);
         this.bill = bill;
         this.loading = false;
       },
@@ -40,12 +42,25 @@ export class BillDetailsComponent implements OnInit {
   }
 
   calculateItemTotal(item: any): number {
-    return item.quantity * item.unitPrice;
+    const quantity = Number(item.quantity) || 0;
+    const unitPrice = Number(item.unitPrice) || 0;
+    const total = quantity * unitPrice;
+    console.log(`Item: quantity=${quantity}, unitPrice=${unitPrice}, total=${total}`);
+    return total;
   }
 
   calculateSubtotal(): number {
-    return this.bill?.productItems?.reduce((sum, item) => 
-      sum + (item.quantity * item.unitPrice), 0) || 0;
+    if (!this.bill?.productItems || this.bill.productItems.length === 0) {
+      console.log('No product items found');
+      return 0;
+    }
+    const subtotal = this.bill.productItems.reduce((sum, item) => {
+      const quantity = Number(item.quantity) || 0;
+      const unitPrice = Number(item.unitPrice) || 0;
+      return sum + (quantity * unitPrice);
+    }, 0);
+    console.log('Subtotal:', subtotal);
+    return subtotal;
   }
 
   calculateTax(): number {

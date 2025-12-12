@@ -14,8 +14,8 @@ import { Router } from '@angular/router';
             </svg>
           </div>
           <div class="brand-content">
-            <span class="brand-text gradient-text">MicroCommerce</span>
-            <span class="brand-subtitle">Business Suite</span>
+            <span class="brand-text gradient-text">Microservices Platform</span>
+            <span class="brand-subtitle">Management System</span>
           </div>
         </div>
         
@@ -47,7 +47,7 @@ import { Router } from '@angular/router';
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke-width="2" stroke-linecap="round"/>
                 <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="2" stroke-linecap="round"/>
               </svg>
-              <span class="notification-badge pulse">5</span>
+              <span class="notification-badge pulse" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
             </button>
             
             <button class="action-btn hover-lift" title="Settings">
@@ -387,5 +387,7 @@ import { Router } from '@angular/router';
   `]
 })
 export class NavbarComponent {
+  notificationCount: number = 0;
+  
   constructor(private router: Router) {}
 }

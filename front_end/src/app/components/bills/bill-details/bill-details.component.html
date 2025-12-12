@@ -91,8 +91,8 @@
                 <span class="product-id">ID: {{ item.productId }}</span>
               </div>
             </td>
-            <td class="text-center">{{ item.quantity }}</td>
-            <td class="text-right">{{ item.unitPrice.toFixed(2) }} DH</td>
+            <td class="text-center">{{ item.quantity || 0 }}</td>
+            <td class="text-right">{{ (item.unitPrice || 0).toFixed(2) }} DH</td>
             <td class="text-right"><strong>{{ calculateItemTotal(item).toFixed(2) }} DH</strong></td>
           </tr>
         </tbody>
