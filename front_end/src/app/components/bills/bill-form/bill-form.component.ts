@@ -76,7 +76,7 @@ export class BillFormComponent implements OnInit {
   loadCustomers(): void {
     this.customerService.getAllCustomers().subscribe({
       next: (response) => {
-        this.customers = response._embedded?.customers || [];
+        this.customers = response || [];
       },
       error: (error) => console.error('Error loading customers:', error)
     });
@@ -85,7 +85,7 @@ export class BillFormComponent implements OnInit {
   loadProducts(): void {
     this.productService.getAllProducts().subscribe({
       next: (response) => {
-        this.products = response._embedded?.products || [];
+        this.products = response || [];
       },
       error: (error) => console.error('Error loading products:', error)
     });

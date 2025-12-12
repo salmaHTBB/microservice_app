@@ -25,7 +25,7 @@ export class CustomersComponent implements OnInit {
     this.loading = true;
     this.customerService.getAllCustomers().subscribe({
       next: (response) => {
-        this.customers = response._embedded?.customers || [];
+        this.customers = response || [];
         this.loading = false;
       },
       error: (error) => {

@@ -14,6 +14,7 @@ import { ProductsComponent } from './components/products/products.component';
 import { ProductFormComponent } from './components/products/product-form/product-form.component';
 import { BillsComponent } from './components/bills/bills.component';
 import { BillDetailsComponent } from './components/bills/bill-details/bill-details.component';
+import { BillFormComponent } from './components/bills/bill-form/bill-form.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { BillDetailsComponent } from './components/bills/bill-details/bill-detai
     ProductsComponent,
     ProductFormComponent,
     BillsComponent,
-    BillDetailsComponent
+    BillDetailsComponent,
+    BillFormComponent
   ],
   imports: [
     BrowserModule,
