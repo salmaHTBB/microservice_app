@@ -1,0 +1,99 @@
+services:
+  # --- INFRASTRUCTURE ---
+
+  # 1. Config Service (Port 8889)
+  config-service:
+    image: rahilisalma93/config-service:latest
+    container_name: config-service
+    ports:
+      - "8889:8889"
+    networks:
+      - microservice-net
+
+  # 2. Discovery Service - Eureka (Port 8761)
+  discovery-service:
+    image: rahilisalma93/discovery-service:latest
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+    depends_on:
+      - config-service
+    environment:
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+    networks:
+      - microservice-net
+
+  # 3. Gateway Service (Port 8888)
+  gateway-service:
+    image: rahilisalma93/gatewey-service:latest
+    container_name: gateway-service
+    ports:
+      - "8888:8888"
+    depends_on:
+      - discovery-service
+    environment:
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+    networks:
+      - microservice-net
+
+  # --- MICROSERVICES MÉTIER ---
+
+  # 4. Customer Service
+  customer-service:
+    image: rahilisalma93/customer-service:latest
+    container_name: customer-service
+    depends_on:
+      - discovery-service
+      - mysql-db
+    environment:
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/microservices_db
+    networks:
+      - microservice-net
+
+  # 5. Inventory Service
+  inventory-service:
+    image: rahilisalma93/inventory-service:latest
+    container_name: inventory-service
+    depends_on:
+      - discovery-service
+      - mysql-db
+    environment:
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/microservices_db
+    networks:
+      - microservice-net
+
+  # 6. Billing Service
+  billing-service:
+    image: rahilisalma93/billing-service:latest
+    container_name: billing-service
+    depends_on:
+      - discovery-service
+      - mysql-db
+    environment:
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/microservices_db
+    networks:
+      - microservice-net
+
+  # --- DATABASE ---
+  # J'utilise le port 3307 sur ton PC pour éviter les erreurs
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=microservices_db
+    ports:
+      - "3307:3306"
+    networks:
+      - microservice-net
+
+networks:
+  microservice-net:
+    driver: bridge
