@@ -16,7 +16,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # CORRECTION 1 : J'ai mis le bon nom (JDK 17) pour être cohérent
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -24,11 +23,11 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      # CORRECTION 2 : J'ai enlevé "=false". Maintenant ça ignore vraiment les tests.
       - name: Build with Maven
-        run: mvn clean package -DskipTests
         working-directory: ./back_end/customer-service
+        run: mvn clean package -DskipTests
 
+      # Scan de sécurité des fichiers
       - name: Run Trivy vulnerability scanner (Filesystem)
         uses: aquasecurity/trivy-action@master
         with:
@@ -37,22 +36,28 @@ jobs:
           format: 'table'
           severity: 'CRITICAL,HIGH'
 
+      # Connexion à Docker Hub
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
+          # On peut mettre le pseudo en clair ici si on veut
+          username: rahilisalma93
+          # MAIS le mot de passe doit rester un secret pour la sécurité !
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      # Construction et envoi de l'image
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
           context: ./back_end/customer-service
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/customer-service:latest
+          # Utilisation de votre pseudo en dur ici aussi
+          tags: rahilisalma93/customer-service:latest
 
+      # Scan de l'image Docker générée
       - name: Run Trivy vulnerability scanner (Image)
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{ secrets.DOCKER_USERNAME }}/customer-service:latest'
+          image-ref: 'rahilisalma93/customer-service:latest'
           format: 'table'
           severity: 'CRITICAL,HIGH'
