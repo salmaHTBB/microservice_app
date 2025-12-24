@@ -1,16 +1,13 @@
 services:
-  # 1. Config Service
-  # Accessible sur votre PC via http://localhost:8889
   config-service:
     image: rahilisalma93/config-service:latest
     container_name: config-service
     ports:
       - "8889:8888"
+    volumes:
+      - ./back_end/config-repo:/config-repo
     networks:
       - microservice-net
-
-  # 2. Discovery Service (Eureka)
-  # Accessible sur votre PC via http://localhost:8761
   discovery-service:
     image: rahilisalma93/discovery-service:latest
     container_name: discovery-service
@@ -20,71 +17,71 @@ services:
       - config-service
     environment:
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+      - EUREKA_CLIENT_REGISTER_WITH_EUREKA=false
+      - EUREKA_CLIENT_FETCH_REGISTRY=false
     networks:
       - microservice-net
+    restart: always
 
-  # 3. Gateway Service
-  # Accessible sur votre PC via http://localhost:8888
   gateway-service:
     image: rahilisalma93/gatewey-service:latest
     container_name: gateway-service
     ports:
-      - "8888:8080"
+      - "9999:8080"
     depends_on:
       - discovery-service
     environment:
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
     networks:
       - microservice-net
+    restart: on-failure
 
   customer-service:
     image: rahilisalma93/customer-service:latest
     container_name: customer-service
-    restart: always
     depends_on:
       - discovery-service
     environment:
-      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:h2:mem:customerdb
-      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.h2.Driver
-      # --- LA CORRECTION EST ICI ---
-      - GLOBAL_PARAMS_P1=100  # Vous pouvez mettre n'importe quelle valeur (100, test, etc.)
+    # On force l'URL du Config Server avec le nom du service Docker
+     - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+    # On force l'URL d'Eureka
+     - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+     - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+     - SPRING_DATASOURCE_URL=jdbc:h2:mem:customers-db
     networks:
       - microservice-net
+    restart: on-failure
 
   inventory-service:
     image: rahilisalma93/inventory-service:latest
     container_name: inventory-service
-    restart: always
     depends_on:
       - discovery-service
     environment:
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:h2:mem:inventorydb
-      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.h2.Driver
-      # --- LA CORRECTION ICI AUSSI ---
-      - GLOBAL_PARAMS_P1=100
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+      - SPRING_DATASOURCE_URL=jdbc:h2:mem:products-db
     networks:
       - microservice-net
+    restart: on-failure
 
   billing-service:
     image: rahilisalma93/billing-service:latest
     container_name: billing-service
-    restart: always
     depends_on:
       - discovery-service
     environment:
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:h2:mem:billingdb
-      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.h2.Driver
-      # --- ET ICI ---
-      - GLOBAL_PARAMS_P1=100
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
+      - SPRING_DATASOURCE_URL=jdbc:h2:mem:bills-db
     networks:
       - microservice-net
+    restart: on-failure
+
 networks:
   microservice-net:
     driver: bridge
