@@ -49,7 +49,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./back_end/config-service       # <-- ICI
+          context: ./back_end/billing-service       # <-- ICI
           file: ./back_end/billing-service/Dockerfile # <-- ICI
           push: true
           # MODIFICATION 5 : Le nom de l'image change
