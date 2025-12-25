@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { BillService } from '../../services/bill.service';
 import { Bill } from '../../models/bill.model';
 
+
 @Component({
   selector: 'app-bills',
   templateUrl: './bills.component.html',
@@ -27,15 +28,14 @@ export class BillsComponent implements OnInit {
     this.loading = true;
     this.errorMessage = '';
     this.billService.getAllBills().subscribe({
-      next: (bills) => {
-        this.bills = Array.isArray(bills) ? bills : [];
+      next: (extractedBills) => {
+        this.bills = extractedBills; // Plus besoin de vérifier Array.isArray ici
         this.loading = false;
         console.log('Bills loaded:', this.bills.length);
       },
       error: (error) => {
         console.error('Error loading bills:', error);
         this.errorMessage = 'Failed to load bills. Please check if the billing service is running.';
-        this.bills = [];
         this.loading = false;
       }
     });

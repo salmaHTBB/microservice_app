@@ -4,12 +4,13 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, retry, timeout } from 'rxjs/operators';
 import { Bill } from '../models/bill.model';
 import { environment } from '../../environments/environment';
+import { map } from 'rxjs/operators'
 
 @Injectable({
   providedIn: 'root'
 })
 export class BillService {
-  private readonly apiUrl = `${environment.gatewayUrl}/billing-service/bills`;
+    private readonly apiUrl = `${environment.gatewayUrl}/billing-service/api/bills`;
   private readonly REQUEST_TIMEOUT = 30000; // 30 seconds
   private readonly RETRY_ATTEMPTS = 2;
 
@@ -26,11 +27,13 @@ export class BillService {
     return throwError(() => error);
   }
 
+  // Modifie la méthode getAllBills pour extraire les données de _embedded
   getAllBills(): Observable<Bill[]> {
-    return this.http.get<Bill[]>(this.apiUrl).pipe(
-      timeout(this.REQUEST_TIMEOUT),
-      retry(this.RETRY_ATTEMPTS),
-      catchError(this.handleError)
+    return this.http.get<any>(this.apiUrl).pipe(
+        map(response => response._embedded ? response._embedded.bills : []),
+        timeout(this.REQUEST_TIMEOUT),
+        retry(this.RETRY_ATTEMPTS),
+        catchError(this.handleError)
     );
   }
 

@@ -14,3 +14,8 @@ node_modules/
 
 # OS
 .DS_Store
+
+front_end/.angular/
+front_end/node_modules/
+front_end/dist/
+**/target/

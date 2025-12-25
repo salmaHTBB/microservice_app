@@ -27,7 +27,7 @@ services:
     image: rahilisalma93/gatewey-service:latest
     container_name: gateway-service
     ports:
-      - "9999:8080"
+      - "8888:8888"
     depends_on:
       - discovery-service
     environment:

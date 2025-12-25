@@ -16,7 +16,6 @@ import org.springframework.context.annotation.Bean;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Random;
 
 @SpringBootApplication
@@ -26,6 +25,7 @@ public class BillingServiceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(BillingServiceApplication.class, args);
 	}
+
 	@Bean
 	CommandLineRunner commandLineRunner(BillRepository billRepository,
 										ProductItemRepository productItemRepository,
@@ -33,9 +33,16 @@ public class BillingServiceApplication {
 										ProductRestClient productRestClient) {
 		return args -> {
 			try {
+				// ÉTAPE 1 : Attendre 10 secondes pour laisser Eureka et les autres services démarrer
+				System.out.println("Attente de 10 secondes pour la stabilisation du réseau...");
+				Thread.sleep(10000);
+
+				// ÉTAPE 2 : Récupérer les données via Feign
+				System.out.println("Tentative de récupération des clients et produits...");
 				Collection<Customer> customers = customerRestClient.getAllCustomers().getContent();
 				Collection<Product> products = productRestClient.getAllProducts().getContent();
 
+				// ÉTAPE 3 : Générer les factures si les listes ne sont pas vides
 				customers.forEach(customer -> {
 					Bill bill = Bill.builder()
 							.billingDate(new Date())
@@ -54,10 +61,14 @@ public class BillingServiceApplication {
 					});
 				});
 				System.out.println("Données de test générées avec succès !");
+			} catch (InterruptedException ie) {
+				Thread.currentThread().interrupt();
 			} catch (Exception e) {
-				System.out.println("--- ATTENTION ---");
-				System.out.println("Impossible de générer les données de test car Customer ou Inventory ne répondent pas encore.");
-				System.out.println("Le service Billing reste quand même allumé.");
+				System.out.println("--- ERREUR ---");
+				System.out.println("Message : " + e.getMessage());
+				System.out.println("Impossible de générer les données de test (Services non prêts).");
+				System.out.println("Le microservice Billing reste allumé pour répondre aux futures requêtes.");
 			}
 		};
-	}}
+	}
+}
