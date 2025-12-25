@@ -1,9 +1,10 @@
-name: CI/CD Config Service
+name: DevSecOps Config Service
 
 on:
   push:
     branches: [ "main" ]
     paths:
+      # MODIFICATION 1 : Le dossier du service
       - 'back_end/config-service/**'
       - '.github/workflows/config-service.yml'
   workflow_dispatch:
@@ -23,21 +24,42 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      # MODIFICATION 2 : Le chemin pour le scan code
+      - name: Security Scan - Code
+        uses: aquasecurity/trivy-action@0.16.1
+        with:
+          scan-type: 'fs'
+          scan-ref: './back_end/config-service' # <-- ICI
+          format: 'table'
+          severity: 'CRITICAL'
+          exit-code: 0
+
+      # MODIFICATION 3 : Le dossier de travail pour Maven
       - name: Build with Maven
-        working-directory: ./back_end/config-service
+        working-directory: ./back_end/config-service # <-- ICI
         run: mvn clean package -DskipTests
 
-      # C'est ici que la magie opère avec le nouveau Token
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: rahilisalma93
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      # MODIFICATION 4 : Docker Build (Contexte, File et Tag)
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./back_end/config-service
-          file: ./back_end/config-service/Dockerfile
+          context: ./back_end/config-service       # <-- ICI
+          file: ./back_end/config-service/Dockerfile # <-- ICI
           push: true
-          tags: rahilisalma93/config-service:latest
+          # MODIFICATION 5 : Le nom de l'image change
+          tags: rahilisalma93/config-service:latest # <-- ICI
+
+      # MODIFICATION 6 : Scan de la nouvelle image
+      - name: Security Scan - Image
+        uses: aquasecurity/trivy-action@0.16.1
+        with:
+          image-ref: 'rahilisalma93/config-service:latest' # <-- ICI
+          format: 'table'
+          severity: 'CRITICAL'
+          exit-code: 0
